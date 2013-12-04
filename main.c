@@ -65,7 +65,8 @@ void Rabin_Karp(char P[], char T[], int n, int m, int d, int q)
                 printf("Rabin-Karp 位置: %d\n", s + 1);
         }
         if (s < n - m) {
-            t = (d * (t - atoi(&T[s + 1]) * h) + atoi(&T[s + m + 1]));
+            t = (d * (t - atoi(&T[s + 1]) * h) + atoi(&T[s + m + 1])) % q;
+            printf("%d\n", t);
             if (t < 0)
                 t = q;
         }
