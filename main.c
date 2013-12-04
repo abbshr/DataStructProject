@@ -1,57 +1,116 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include <sys/time.h>
+#include <time.h>
 
-/*strut Timeval
+#define M 50000
+#define N 50000
+
+void KMP(char B[], char A[], int n, int m)
 {
-    long tv_sec; 
-    long tv_usec; 
+    /* preprocess P */
+    int P[M];
+    P[0] = -1;
+    int j = -1;
+    int i;
+    for (i = 1; i < m; i++)
+    {
+        while (j >= 0 && B[j + 1] != B[i])
+            j = P[j];
+        if (B[j + 1] == B[i])
+            j++;
+        P[i] = j;
+    }
 
-};*/
+    /* KMP */
+    j = -1;
+    for (i = 0; i < n; i++)
+    {
+        while (j >= 0 && B[j + 1] != A[i])
+            j = P[j];
+        if (B[j + 1] == A[i])
+            j++;
+        if (j == m - 1) 
+        {
+            printf("KMP 位置: %d\n", i - m + 2);
+            j = P[j];
+        }
+    }
+}
+
+void Rabin_Karp(char P[], char T[], int n, int m, int d, int q)
+{
+    int h = 1;
+    int p = 0;
+    int t = 0;
+    int i, s, j;
+
+    for (i = 0; i < m - 1; i++)
+        h = ( h * d ) % q;
+    for (i = 0; i < m; i++)
+    {
+        p = (d * p + atoi(&P[i])) % q;
+        t = (d * t + atoi(&T[i])) % q; 
+    }
+    for (s = 0; s < n - m; s++)
+    {
+        if (p == t)
+        {
+
+            for (j = 0; j < m; j++)
+                if (atoi(&T[s + j]) != atoi(&P[j]))
+                    break;       
+            if (j == m)
+                printf("Rabin-Karp 位置: %d\n", s + 1);
+        }
+        if (s < n - m) {
+            t = (d * (t - atoi(&T[s + 1]) * h) + atoi(&T[s + m + 1]));
+            if (t < 0)
+                t = q;
+        }
+    }
+}
+
+void Naive_Match(char P[], char T[], int n, int m)
+{
+    int i, j;
+    for (i = 0; i < n - m + 1; i++)
+    {
+        for (j = 0; j < m; j++)
+            if (P[j] != T[i + j])
+                break;
+        if (j == m)
+            printf("Naive 位置: %d\n", i + 1);
+    }
+}
+
 
 int main(int argc, char const *argv[])
 {
-    timeval startTime, endTime;
     double timeuse;
-	/* read from file */
-	char* str = NULL;
-	int n;
-	/* input pattern str */
-	printf("模式串个数：\n");
-	int m;
-	scanf("%d", m);
-	char* p = NULL;
-	p = (char* )malloc(sizeof(char) * m);
+    char str[N], p[M];
+
+	/* read from file s*/
+    /* string length: 1301 */
+    FILE* fp = NULL;
+    fp = fopen("test", "r");
+    while (fscanf(fp, "%s", str) != -1);
+    int n = strlen(str);
+
+	/* input pattern str */ 
 	printf("输入模式串：\n");
-	scanf("%c", p);
+	scanf("%s", p);
+    int m = strlen(p);
 
-    gettimeofday(&startTime, 0);
-	   Naive_Match(p, str, n, m);
-    gettimeofday(&endTime,0);
-    timeuse = 1000000 * (endtime.tv_sec - starttime.tv_sec) 
-            + endtime.tv_usec - startime.tv_usec;
-    timeuse /= 1000;  //除以1000则进行毫秒计时，如果除以1000000则进行秒级别计时，如果除以1则进行微妙级别计时
-    printf("%f\n", timeuse);
+    /* Naive Match */
+	//Naive_Match(p, str, n, m);
+
+    /* Rabin-Karp */	
+    Rabin_Karp(p, str, n, m, 10, 17);
+
+    /* KMP */
+	//KMP(p, str, n, m);
 	
-    gettimeofday(&startTime, 0);
-        Rabin_Karp();
-    gettimeofday(&endTime,0);
-    timeuse = 1000000 * (endtime.tv_sec - starttime.tv_sec) 
-            + endtime.tv_usec - startime.tv_usec;
-    timeuse /= 1000;  //除以1000则进行毫秒计时，如果除以1000000则进行秒级别计时，如果除以1则进行微妙级别计时
-    printf("%f\n", timeuse);
-
-    gettimeofday(&startTime, 0);
-	int* next = NULL;
-	next = (int* )malloc(sizeof(int) * m);
-	preprocess(next, p, m);
-	   KMP(next, p, str, n, m);
-    gettimeofday(&endTime,0);
-    timeuse = 1000000 * (endtime.tv_sec - starttime.tv_sec) 
-            + endtime.tv_usec - startime.tv_usec;
-    timeuse /= 1000;  //除以1000则进行毫秒计时，如果除以1000000则进行秒级别计时，如果除以1则进行微妙级别计时
-    printf("%f\n", timeuse);
-
-	return 0;
+    return 0;
 }
