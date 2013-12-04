@@ -39,37 +39,38 @@ void KMP(char B[], char A[], int n, int m)
     }
 }
 
-void Rabin_Karp(char P[], char T[], int n, int m, int d, int q)
+void Rabin_Karp(char P[], char T[], int n, int m)
 {
+    int d = 10; 
+    int q = 13;
     int h = 1;
     int p = 0;
     int t = 0;
     int i, s, j;
 
     for (i = 0; i < m - 1; i++)
-        h = ( h * d ) % q;
+        h = ( h * d );
+
+    /* preprecess: get hash t & p */
     for (i = 0; i < m; i++)
     {
-        p = (d * p + atoi(&P[i])) % q;
-        t = (d * t + atoi(&T[i])) % q; 
+        p = (d * p + P[i]);
+        t = (d * t + T[i]); 
     }
+
+    /* rabin-karp */
     for (s = 0; s < n - m; s++)
     {
         if (p == t)
         {
-
             for (j = 0; j < m; j++)
-                if (atoi(&T[s + j]) != atoi(&P[j]))
+                if (T[s + j] != P[j])
                     break;       
             if (j == m)
                 printf("Rabin-Karp 位置: %d\n", s + 1);
         }
-        if (s < n - m) {
-            t = (d * (t - atoi(&T[s + 1]) * h) + atoi(&T[s + m + 1])) % q;
-            printf("%d\n", t);
-            if (t < 0)
-                t = q;
-        }
+        if (s < n - m)
+            t = (d * (t - T[s] * h) + T[s + m]);
     }
 }
 
@@ -105,13 +106,13 @@ int main(int argc, char const *argv[])
     int m = strlen(p);
 
     /* Naive Match */
-	//Naive_Match(p, str, n, m);
+	Naive_Match(p, str, n, m);
 
     /* Rabin-Karp */	
-    Rabin_Karp(p, str, n, m, 10, 17);
+    Rabin_Karp(p, str, n, m);
 
     /* KMP */
-	//KMP(p, str, n, m);
+	KMP(p, str, n, m);
 	
     return 0;
 }
