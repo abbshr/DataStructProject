@@ -93,26 +93,26 @@ int main(int argc, char const *argv[])
     double timeuse;
     char str[N], p[M];
 
-	/* read from file s*/
+    /* read from file s*/
     /* string length: 1301 */
     FILE* fp = NULL;
     fp = fopen("test", "r");
     while (fscanf(fp, "%s", str) != -1);
     int n = strlen(str);
 
-	/* input pattern str */ 
-	printf("输入模式串：\n");
-	scanf("%s", p);
+    /* input pattern str */ 
+    printf("输入模式串：\n");
+    scanf("%s", p);
     int m = strlen(p);
 
     /* Naive Match */
-	Naive_Match(p, str, n, m);
+    Naive_Match(p, str, n, m);
 
     /* Rabin-Karp */	
     Rabin_Karp(p, str, n, m);
 
     /* KMP */
-	KMP(p, str, n, m);
+    KMP(p, str, n, m);
 	
     return 0;
 }
