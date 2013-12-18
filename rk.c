@@ -4,40 +4,8 @@
 
 #include <time.h>
 
-#define M 50000
-#define N 50000
-
-void KMP(char B[], char A[], int n, int m)
-{
-    /* preprocess P */
-    int P[M];
-    P[0] = -1;
-    int j = -1;
-    int i;
-    for (i = 1; i < m; i++)
-    {
-        while (j >= 0 && B[j + 1] != B[i])
-            j = P[j];
-        if (B[j + 1] == B[i])
-            j++;
-        P[i] = j;
-    }
-
-    /* KMP */
-    j = -1;
-    for (i = 0; i < n; i++)
-    {
-        while (j >= 0 && B[j + 1] != A[i])
-            j = P[j];
-        if (B[j + 1] == A[i])
-            j++;
-        if (j == m - 1) 
-        {
-            printf("KMP 位置: %d\n", i - m + 2);
-            j = P[j];
-        }
-    }
-}
+#define M 30
+#define N 4000000
 
 void Rabin_Karp(char P[], char T[], int n, int m)
 {
@@ -74,27 +42,14 @@ void Rabin_Karp(char P[], char T[], int n, int m)
     }
 }
 
-void Naive_Match(char P[], char T[], int n, int m)
-{
-    int i, j;
-    for (i = 0; i < n - m + 1; i++)
-    {
-        for (j = 0; j < m; j++)
-            if (P[j] != T[i + j])
-                break;
-        if (j == m)
-            printf("Naive 位置: %d\n", i + 1);
-    }
-}
-
-
 int main(int argc, char const *argv[])
 {
-    double timeuse;
+    clock_t t1, t2;
+
     char str[N], p[M];
 
     /* read from file s*/
-    /* string length: 1301 */
+    /* string length: <= 400W */
     FILE* fp = NULL;
     fp = fopen("test", "r");
     while (fscanf(fp, "%s", str) != -1);
@@ -105,14 +60,11 @@ int main(int argc, char const *argv[])
     scanf("%s", p);
     int m = strlen(p);
 
-    /* Naive Match */
-    Naive_Match(p, str, n, m);
-
-    /* Rabin-Karp */	
+    /* Rabin-Karp */    
+    t1 = clock();
     Rabin_Karp(p, str, n, m);
+    t2 = clock();
+    printf("Rabin-Karp匹配时间（ms）：%lf\n", (double)(t2 - t1));
 
-    /* KMP */
-    KMP(p, str, n, m);
-	
     return 0;
 }
